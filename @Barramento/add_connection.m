@@ -5,7 +5,5 @@ function add_connection(obj, connector)
     else
         error('O objeto posto não é um tipo de connector');
     end
-
-
 end
 
