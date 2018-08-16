@@ -1,0 +1,12 @@
+classdef Transformador  <   handle
+    %Esta classe irá definir um objeto transformador
+    
+    properties  (SetAccess = private, GetAccess = public)
+        P
+    end
+    
+    methods
+    end
+    
+end
+

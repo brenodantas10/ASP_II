@@ -1,5 +1,6 @@
 function Calc_RLC(obj)
-   %LEIA -- IMPORTANTE
+    p=1;
+    %LEIA -- IMPORTANTE
     %
     %
     %Esta função calcula a resistencia R, indutancia L e capacitancia C da
@@ -18,7 +19,7 @@ function Calc_RLC(obj)
     %prod: a função prod multiplica os elementos de mesma coluna
     %
     %LEIA -- IMPORTANTE
-
+    
     %pegando o numero de germinações
     n_ger=size(obj.geo_fase,1);
 
@@ -32,7 +33,7 @@ function Calc_RLC(obj)
     d=dist(obj.geo_fase,obj.geo_fase');
 
     %Calculando a multiplicação de distancias de mesma fase para cada germinação
-    d_prod=prod(d+obj.raio*eye(size(d)));
+    d_prod=prod(d+eye(size(d)));
 
     %calculando Distâncias entre Fases
     D=dist(obj.geo_linha,obj.geo_linha');
@@ -58,18 +59,17 @@ function Calc_RLC(obj)
     log_sum=cos(alpha(2:n_fases))*log(D_prod(2)./D_prod(2:n_fases))';
 
     %Calculando a Resistencia
-    obj.R=obj.pho/(n_ger*pi*obj.raio^2);
+    obj.R=obj.condutor.R/n_ger;
 
     %calculando a indutância de cada germinação
-    L=2e-7*(log(D_prod(2)^(n_ger/n_fases)./(d_prod.*exp(-obj.mu_r/4))) + n_ger*log_sum/n_fases );
+    L=obj.condutor.L+2e-7*(log(D_prod(2)^(n_ger/n_fases)./(p*d_prod)) + n_ger*log_sum/n_fases );
 
     %calculando a indutancia equivalente da linha
     obj.L=1/sum(1./L);
 
     %calculando a capacitância de cada germinação
-    C=1e-9/18./(log(D_prod(2)^(n_ger/n_fases)./(d_prod)) + n_ger*log_sum/n_fases );
+    C=1./(1/obj.condutor.C+(log(D_prod(2)^(n_ger/n_fases)./(p*d_prod)) + n_ger*log_sum/n_fases )./(1e-9/18));
 
     %Calculando a capacitância equivalente
     obj.C=sum(C);
-    
 end 

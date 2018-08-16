@@ -1,34 +1,23 @@
 function Add_Linha( obj, Linha,i,j)
 %Esta função adiciona Uma linha de transmissão ou transformador conectando
 %os barramentos i e j
-    if i>j
-        n=j; m=i;
-    elseif i<j
-        n=i; m=j;
-    else
-        error('Não pode adicionar uma Linha conectando um barramento a ele mesmo');
-    end
-    
-    if size(obj.Links{n,m},2)==1
-        if isa(obj.Links{n,m}{1},'logical')
-            obj.Links{n,m}{1}=logical(1);
-        end
-    elseif size(obj.Links{n,m},2)>1
-        if (isa(obj.Links{n,m}{end},'Transformador') && ~isa(Linha,'Transformador')) || (isa(obj.Links{n,m}{end},'Linha_Transmissao') && ~isa(Linha,'Linha_Transmissao'))
-            error('Entre dois Barramentos só pode haver transformadores em paralelo transformador ou várias Linhas em Paralelo');
-        elseif isa(obj.Links{n,m}{end},'Transformador') && isa(Linha,'Transformador')
-            if obj.Links{n,m}{end}.V1_base~=Linha.V1_base || obj.Links{n,m}{end}.V2_base~=Linha.V2_base || obj.Links{n,m}{end}.a~=Linha.a
-                error('Os transformadores destes barramentos devem ter a mesma tensão base e relação de transformação');
-            end
-        end
+    if ~(isa(Linha,'Linha_Transmissao') || isa(Linha,'Transformador') || isa(Linha,'Chave')) && numel(Linha)~=1
+        error('A classe de entrada não é válida');
+    elseif i>numel(obj.Barras) || j>numel(obj.Barras) || i==j || i<=0 || j<=0 round(i)~=i || round(j)~=j
+        error('Indicies não condizem com o numero de Barras ou os indices são iguais');
     end
     
     if isa(Linha,'Linha_Transmissao')
-        obj.Links{n,m}{end+1}=Linha_Transmissao(Linha);
+        obj.Linhas{end+1}=Linha_Transmissao(Linha);
     elseif isa(Linha,'Transformador')
-        obj.Links{n,m}{end+1}=Transformador(Linha);
-    else
-        error('O objeto não se configura como uma linha ou transformador');
+        obj.Linhas{end+1}=Transformador(Linha);
+        obj.Linhas{end}.Change_S_base(obj.S_base);
+    elseif isa(Linha,'Chave')
+        obj.Linhas{end+1}=Chave(Linha);
+        obj.Chaves{end+1}=obj.Linhas{end};
     end
+    obj.Linhas{end}.Add_Bar(obj.Barras{i},1);
+    obj.Linhas{end}.Add_Bar(obj.Barras{j},2);
+    obj.Barras{i}.Add_Connection(obj.Linhas{end});
+    obj.Barras{j}.Add_Connection(obj.Linhas{end});
 end
-

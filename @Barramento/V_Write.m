@@ -1,10 +1,9 @@
 function V_Write(obj,V)
-    if strcmp(obj.Tipo,'Slack')
-        error('Barramento Slack não muda tensão');
-    elseif strcmp(obj.Tipo,'Carga')
+    if ~obj.Fixo(3) && ~obj.Fixo(4)
         obj.V=V;
-    elseif strcmp(obj.Tipo,'V_Ctrl')
+    elseif obj.Fixo(3) && ~obj.Fixo(4)
         obj.V=abs(obj.V)*exp(1i*angle(V));
+    elseif ~obj.Fixo(3) && obj.Fixo(4)
+        obj.V=abs(V)*exp(1i*angle(obj.V));
     end
-    
 end
