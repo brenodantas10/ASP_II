@@ -83,9 +83,9 @@ Sistema.Add_Linha(Chave(),18,21);
 
 %Fechando as Chaves necessárias
 Sistema.Open_Chave(1);
-Sistema.Close_Chave(2);
+Sistema.Open_Chave(2);
 Sistema.Close_Chave(3);
-Sistema.Close_Chave(4);
+Sistema.Open_Chave(4);
 
 %Calculando Matriz Y_Barra
 Sistema.Calc_Y;
